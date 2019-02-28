@@ -10,6 +10,7 @@ import koaCors from 'kcors'
 
 import schemaBasic from './schema-basic/index'
 import schemaRelay from './schema-paginated/index'
+import schemaPmt from './schema-pmt/index'
 
 const app = new Koa
 const router = new KoaRouter
@@ -27,8 +28,25 @@ router.get('/graphql-relay', graphiql({
   js: '/graphiql.js'
 }))
 
+router.get('/pmt', graphiql({
+  url: '/pmt',
+  css: '/graphiql.css',
+  js: '/graphiql.js'
+}))
+
 router.post('/graphql', koaConvert(graphqlHTTP({
   schema: schemaBasic,
+  graphiql: true,
+  formatError: (error, ctx) => ({
+    message: error.message,
+    locations: error.locations,
+    stack: error.stack,
+    path: error.path
+  })
+})))
+
+router.post('/pmt', koaConvert(graphqlHTTP({
+  schema: schemaPmt,
   graphiql: true,
   formatError: (error, ctx) => ({
     message: error.message,
@@ -57,5 +75,4 @@ app.use(router.allowedMethods())
 app.use(koaStatic(path.join(__dirname, 'node_modules/graphsiql')))
 
 const port = process.env.PORT || 3000
-app.listen(port, () => console.log(`server listening at http://localhost:${port}/graphql && http://localhost:${port}/graphql-relay`))
-
+const _server = app.listen(port, () => console.log(`server listening at http://localhost:${port}/graphql && http://localhost:${port}/graphql-relay`))
