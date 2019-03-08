@@ -5,3 +5,4 @@ npm-debug.log
 
 # incase an office app is open
 ~*
+.vscode
