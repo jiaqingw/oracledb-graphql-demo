@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha",
-    "start": "babel-node server.js",
+    "start": "nodemon --exec babel-node server.js",
     "debug": "babel-node server.js --debug"
   },
   "engines": {
@@ -53,6 +53,7 @@
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
     "graphql": "^0.13.2",
+    "graphql-playground-middleware-koa": "^1.6.12",
     "graphql-relay": "^0.6.0",
     "graphsiql": "0.2.0",
     "join-monster": "^2.1.0",

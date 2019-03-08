@@ -14,6 +14,7 @@ import schemaPmt from './schema-pmt/index'
 
 const app = new Koa
 const router = new KoaRouter
+const koaPlayground = require('graphql-playground-middleware-koa').default
 
 app.use(koaConvert(koaCors()))
 
@@ -45,16 +46,20 @@ router.post('/graphql', koaConvert(graphqlHTTP({
   })
 })))
 
-router.post('/pmt', koaConvert(graphqlHTTP({
-  schema: schemaPmt,
-  graphiql: true,
-  formatError: (error, ctx) => ({
-    message: error.message,
-    locations: error.locations,
-    stack: error.stack,
-    path: error.path
-  })
-})))
+const pmtMiddleware = graphqlHTTP({
+      schema: schemaPmt,
+      graphiql: false,
+      formatError: (error, ctx) => ({
+        message: error.message,
+        locations: error.locations,
+        stack: error.stack,
+        path: error.path
+      })
+    })
+
+router.redirect('/', '/pmtql')
+router.post('/pmt', pmtMiddleware)
+router.all('/pmtql', koaPlayground({ endpoint: '/pmt' }))
 
 router.post('/graphql-relay', koaConvert(graphqlHTTP({
   schema: schemaRelay,
@@ -66,8 +71,6 @@ router.post('/graphql-relay', koaConvert(graphqlHTTP({
     path: error.path
   })
 })))
-
-router.redirect('/', '/graphql')
 
 app.use(router.routes())
 app.use(router.allowedMethods())
